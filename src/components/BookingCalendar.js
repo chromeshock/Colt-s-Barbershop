@@ -1,8 +1,6 @@
 import Calendar from 'react-calendar';
 import React, { useState } from 'react';
-import Firestore from './firestore';
-import { v4 as uuidv4 } from 'uuid';
-
+import Firestore from './firestore.js';
 
 function BookingCalendar() {
   const [date, setDate] = useState(new Date());
@@ -17,40 +15,41 @@ function BookingCalendar() {
   const handleTimeChange = (event) => {
     setSelectedTime(event.target.value);
   };
-
+  //----------------------------------------------------------------submit function
   const handleSubmit = async (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  // Ensure that both date and time are selected
-  if (!date || !selectedTime) {
-    alert('Please select a date and time.');
-    return;
-  }
+    // Ensure that both date and time are selected
+    if (!date || !selectedTime) {
+      alert('Please select a date and time.');
+      return;
+    }
 
-  // Format date and time
-  const appointmentDate = date.toISOString().split('T')[0]; // Format date as 'YYYY-MM-DD'
-  const appointmentTime = selectedTime;
+    // Format date and time
+    const appointmentDate = date.toISOString().split('T')[0]; // Format date as 'YYYY-MM-DD'
+    const appointmentTime = selectedTime;
 
-  // Create an object with the appointment data
-  const appointmentData = {
-    id: uuidv4(), // Unique ID for the appointment
-    appointmentDate,
-    time: appointmentTime,
-    // Other relevant appointment data
+    // Create an object with the appointment data
+    const appointmentData = {
+      appointmentDate,
+      time: appointmentTime,
+      // Other relevant appointment data
+    };
+
+    console.log('Appointment data:', appointmentData); // Log the appointment data
+
+    try {
+      setIsLoading(true);
+      await Firestore.addDoc(appointmentData);
+      console.log('Appointment saved successfully!'); // Log success message
+      alert('Appointment saved successfully!');
+    } catch (error) {
+      setIsError(true);
+      console.error('Error saving appointment:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  try {
-    setIsLoading(true);
-    await Firestore.addDoc(appointmentData);
-    alert('Appointment saved successfully!');
-  } catch (error) {
-    setIsError(true);
-    console.error('Error saving appointment:', error);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
 
   return (
     <div className="booking-calendar">
@@ -76,7 +75,7 @@ function BookingCalendar() {
           <option value="9:00pm">9:00pm</option>
         </select>
         <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : 'Book appointment'}
+          {isLoading ? 'Saving...' : 'Book Appointment'}
         </button>
         {isError && <p>An error occurred while saving the appointment.</p>}
       </form>

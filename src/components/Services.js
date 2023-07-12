@@ -7,6 +7,7 @@ const Services = () => {
             <h1>Services</h1>
             <div>
                 <table>
+                    <tbody>
                     <tr>
                         <th>Hair Cut</th>
                         <th>Price</th>
@@ -31,7 +32,7 @@ const Services = () => {
                         <td>Kid's Cut</td>
                         <td>$30</td>
                     </tr>
-                    
+                    </tbody>
                 </table>
             </div>
         </div>

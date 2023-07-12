@@ -1,27 +1,32 @@
-import { doc, addDoc } from 'firebase/firestore';
-import db from './FirebaseConfig';
+import { collection, addDoc } from 'firebase/firestore';
+import db from '../firebase/FirebaseConfig';
 
-const Firestore = {
+const firestore = {
   addDoc: async (appointmentData) => {
     try {
-      // Check if the 'id' property exists
-      if (!appointmentData.hasOwnProperty('id')) {
-        throw new Error("Missing 'id' property in appointmentData");
-      }
-
-      // Check if the 'id' property has a valid value
-      if (!appointmentData) {
-        throw new Error("Invalid 'id' value in appointmentData");
-      }
-
-      const docRef = doc(db, 'appointments', appointmentData.id);
-      await addDoc(docRef, appointmentData);
+      console.log('addDoc method called with data:', appointmentData);
+      const appointmentsCollection = collection(db, 'appointments');
+      await addDoc(appointmentsCollection, appointmentData);
       console.log('Appointment saved successfully!');
     } catch (error) {
-      console.error('Error saving appointment:', error);
+      console.error('Error saving appointment:', error.message);
       throw error; // Rethrow the error to propagate it to the calling code
     }
   },
-};
 
-export default Firestore;
+addSampleData: async () => {
+    try {
+      const docRef = await addDoc(collection(db, 'appointments'), { 
+        name: 'John Doe',
+        email: 'kenaa@example.com',
+        phone: '1234567890',
+        address: '123 Main St',
+        city: 'New York',
+      });
+      console.log('Appointment saved successfully!');
+    } catch (error) {
+      console.error('Error saving appointment:', error.message);
+    }
+  },
+}
+export default firestore;
